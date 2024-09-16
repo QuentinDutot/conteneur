@@ -102,13 +102,44 @@ Creates a new scope within the container, does not take options.
 container.createScope():  void
 ```
 
+## 📊 Comparisons
+
+| Feature                | ConteneurJS | InversifyJS | TSyringe | TypeDI   | Awilix    |
+|------------------------|-------------|-------------|----------|----------|-----------|
+| TS + ESM + Tests       | ✅          | ✅          | ✅       | ✅       | ✅        |
+| Dependencies Count     | 🥇 0        | 🥈 1        | 🥈 1     | 🥇 0     | 🥉 2      |
+| Platform Agnostic      | ✅          |             |          |          | ❌        |
+|                        |             |             |          |          |           |
+| Function Support       | ✅          | ❌          | ❌       | ❌       | ✅        |
+| Class Support          | ✅          | ✅          | ✅       | ✅       | ✅        |
+| Value Support          | ✅          | ❌          | ❌       | ❌       | ✅        |
+|                        |             |             |          |          |           |
+| Decorators Free        | ✅          | ❌          | ❌       | ❌       | ✅        |
+| Lifetime Management    | ✅          |             |          |          | ✅        |
+| Scoped Containers      | ✅          |             |          |          | ✅        |
+|                        |             |             |          |          |           |
+| Size (min)             | 🥇 3.4kb    | ➖ 49.9kb   | ➖ 15.6kb| 🥈 9.5kb | 🥉 12.5kb |
+| Size (min + gzip)      | 🥇 1.4kb    | ➖ 11.1kb   | ➖ 4.7kb | 🥈 2.7kb | 🥉 4.6kb  |
+
 ## 📃 Examples
 
-- **Simple**
-  - [Function](./docs/simple/function.md)
-  - [Class](./docs/simple/class.md)
-  - [Value](./docs/simple/value.md)
-  - [Hybrid](./docs/simple/hybrid.md)
+- **Basics**
+  - [Function](./docs/basics/function.md)
+  - [Class](./docs/basics/class.md)
+  - [Value](./docs/basics/value.md)
+  - [Hybrid](./docs/basics/hybrid.md)
+
+- **Features**
+  - [TypeScript](./docs/features/typescript.md) [WIP]
+  - [Lifetime](./docs/features/lifetime.md) [WIP]
+  - [Scope](./docs/features/scoped.md) [WIP]
+  - [Errors](./docs/features/errors.md) [WIP]
+
+- **Integrations**
+  - [Express](./docs/integrations/express.md) [WIP]
+  - [Fastify](./docs/integrations/fastify.md) [WIP]
+  - [Hono](./docs/integrations/hono.md) [WIP]
+  - [Cloudflare](./docs/integrations/cloudflare.md) [WIP]
 
 ## 📃 Inspiration
 
