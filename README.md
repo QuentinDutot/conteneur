@@ -31,7 +31,7 @@ const userController = container.resolve('userController')
 
 ## 🎁 Public APIs
 
-**createContainer**
+- **createContainer**
 
 Creates a new container, does not take options.
 
@@ -39,53 +39,54 @@ Creates a new container, does not take options.
 createContainer(): Container
 ```
 
-**asFunction**
+- **asFunction**
 
-Registers a factory function to the container.
+Creates a factory function resolver.
 
 ```js
 asFunction(myFactory: Function, options?: Options): Resolver
 ```
 
-`options.timeline` : *transient* (default) - *singleton* - *scoped*
+`options.lifetime` : *transient* (default) - *singleton* - *scoped*
 
-**asClass**
+- **asClass**
 
-Registers a class to the container.
+Creates a class resolver.
 
 ```js
 asClass(myClass: Class, options?: Options): Resolver
 ```
 
-`options.timeline` : *transient* (default) - *singleton* - *scoped*
+`options.lifetime` : *transient* (default) - *singleton* - *scoped*
 
-**asValue**
+- **asValue**
 
-Registers a value to the container.
+Creates a value resolver.
 
 ```js
-asValue(myValue: string | number | boolean): Resolver
+asValue(myValue: Primitive): Resolver
 ```
 
 ## 🔋 Container APIs
 
-**register**
+- **register**
 
-Registers multiple resolvers to the container.
+Registers multiple resolvers within the container.
 
 ```js
 container.register(modules: Record<string, Resolver>): void
 ```
 
-**resolve**
+- **resolve**
 
-Injects a function or class **registered** in the container with its dependencies and returns the result. Values are returned as is.
+Injects a function or class **registered** in the container with its dependencies and returns the result.
+Values are returned as is.
 
 ```js
 container.resolve<T  extends keyof Container>(name: T): Container[T]
 ```
 
-**build**
+- **build**
 
 Injects a function or class **not registered** in the container with its dependencies and returns the result.
 
@@ -93,10 +94,22 @@ Injects a function or class **not registered** in the container with its depende
 container.build<T>(target: ClassOrFunctionReturning<T>): T
 ```
 
-**createScope**
+- **createScope**
 
-Creates a new scope within the container.
+Creates a new scope within the container, does not take options.
 
 ```js
 container.createScope():  void
 ```
+
+## 📃 Examples
+
+- **Simple**
+  - [Function](./docs/simple/function.md)
+  - [Class](./docs/simple/class.md)
+  - [Value](./docs/simple/value.md)
+  - [Hybrid](./docs/simple/hybrid.md)
+
+## 📃 Inspiration
+
+This project is inspired by [jeffijoe/awilix](https://github.com/jeffijoe/awilix) and builds upon its core concepts.
