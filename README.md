@@ -102,21 +102,6 @@ Creates a new scope within the container, does not take options.
 container.createScope():  void
 ```
 
-## 📊 Comparisons
-|                     | ConteneurJS | InversifyJS | TSyringe  | TypeDI   | Awilix    |
-|---------------------|-------------|-------------|-----------|----------|-----------|
-| TS + ESM + Tests    | ✅          | ✅          | ✅        | ✅       | ✅        |
-| Dependency Count    | 🥇 0        | 🥈 1        | 🥈 1      | 🥇 0     | 🥉 2      |
-| Platform Agnostic   | ✅          | ❌          | ❌        | ❌       | ❌        |
-| Function Support    | ✅          | ❌          | ❌        | ❌       | ✅        |
-| Class Support       | ✅          | ✅          | ✅        | ✅       | ✅        |
-| Value Support       | ✅          | ❌          | ❌        | ❌       | ✅        |
-| Decorator Free      | ✅          | ❌          | ❌        | ❌       | ✅        |
-| Lifetime Management | ✅          | ✅          | ✅        | ✅       | ✅        |
-| Scoped Container    | ✅          | ✅          | ✅        | ❌       | ✅        |
-| Size (min)          | 🥇 3.4kb    | ➖ 49.9kb   | ➖ 15.6kb | 🥈 9.5kb | 🥉 12.5kb |
-| Size (min + gzip)   | 🥇 1.4kb    | ➖ 11.1kb   | ➖ 4.7kb  | 🥈 2.7kb | 🥉 4.6kb  |
-
 ## 📃 Examples
 
 - **Basics**
@@ -136,6 +121,21 @@ container.createScope():  void
   - [Fastify](./docs/integrations/fastify.md) [WIP]
   - [Hono](./docs/integrations/hono.md) [WIP]
   - [Cloudflare](./docs/integrations/cloudflare.md) [WIP]
+
+## 📊 Comparisons
+|                     | ConteneurJS | InversifyJS | TSyringe  | TypeDI   | Awilix    |
+|---------------------|-------------|-------------|-----------|----------|-----------|
+| TS + ESM + Tests    | ✅          | ✅          | ✅        | ✅       | ✅        |
+| Dependency Count    | 🥇 0        | 🥈 1        | 🥈 1      | 🥇 0     | 🥉 2      |
+| Platform Agnostic   | ✅          | ❌          | ❌        | ❌       | ❌        |
+| Function Support    | ✅          | ❌          | ❌        | ❌       | ✅        |
+| Class Support       | ✅          | ✅          | ✅        | ✅       | ✅        |
+| Value Support       | ✅          | ❌          | ❌        | ❌       | ✅        |
+| Decorator Free      | ✅          | ❌          | ❌        | ❌       | ✅        |
+| Lifetime Management | ✅          | ✅          | ✅        | ✅       | ✅        |
+| Scoped Container    | ✅          | ✅          | ✅        | ❌       | ✅        |
+| Size (min)          | 🥇 3.4kb    | ➖ 49.9kb   | ➖ 15.6kb | 🥈 9.5kb | 🥉 12.5kb |
+| Size (min + gzip)   | 🥇 1.4kb    | ➖ 11.1kb   | ➖ 4.7kb  | 🥈 2.7kb | 🥉 4.6kb  |
 
 ## 📃 Inspiration
 
