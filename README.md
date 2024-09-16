@@ -103,23 +103,19 @@ container.createScope():  void
 ```
 
 ## 📊 Comparisons
-
-| Feature                | ConteneurJS | InversifyJS | TSyringe | TypeDI   | Awilix    |
-|------------------------|-------------|-------------|----------|----------|-----------|
-| TS + ESM + Tests       | ✅          | ✅          | ✅       | ✅       | ✅        |
-| Dependencies Count     | 🥇 0        | 🥈 1        | 🥈 1     | 🥇 0     | 🥉 2      |
-| Platform Agnostic      | ✅          |             |          |          | ❌        |
-|                        |             |             |          |          |           |
-| Function Support       | ✅          | ❌          | ❌       | ❌       | ✅        |
-| Class Support          | ✅          | ✅          | ✅       | ✅       | ✅        |
-| Value Support          | ✅          | ❌          | ❌       | ❌       | ✅        |
-|                        |             |             |          |          |           |
-| Decorators Free        | ✅          | ❌          | ❌       | ❌       | ✅        |
-| Lifetime Management    | ✅          |             |          |          | ✅        |
-| Scoped Containers      | ✅          |             |          |          | ✅        |
-|                        |             |             |          |          |           |
-| Size (min)             | 🥇 3.4kb    | ➖ 49.9kb   | ➖ 15.6kb| 🥈 9.5kb | 🥉 12.5kb |
-| Size (min + gzip)      | 🥇 1.4kb    | ➖ 11.1kb   | ➖ 4.7kb | 🥈 2.7kb | 🥉 4.6kb  |
+|                     | ConteneurJS | InversifyJS | TSyringe  | TypeDI   | Awilix    |
+|---------------------|-------------|-------------|-----------|----------|-----------|
+| TS + ESM + Tests    | ✅          | ✅          | ✅        | ✅       | ✅        |
+| Dependency Count    | 🥇 0        | 🥈 1        | 🥈 1      | 🥇 0     | 🥉 2      |
+| Platform Agnostic   | ✅          | ❌          | ❌        | ❌       | ❌        |
+| Function Support    | ✅          | ❌          | ❌        | ❌       | ✅        |
+| Class Support       | ✅          | ✅          | ✅        | ✅       | ✅        |
+| Value Support       | ✅          | ❌          | ❌        | ❌       | ✅        |
+| Decorator Free      | ✅          | ❌          | ❌        | ❌       | ✅        |
+| Lifetime Management | ✅          | ✅          | ✅        | ✅       | ✅        |
+| Scoped Container    | ✅          | ✅          | ✅        | ❌       | ✅        |
+| Size (min)          | 🥇 3.4kb    | ➖ 49.9kb   | ➖ 15.6kb | 🥈 9.5kb | 🥉 12.5kb |
+| Size (min + gzip)   | 🥇 1.4kb    | ➖ 11.1kb   | ➖ 4.7kb  | 🥈 2.7kb | 🥉 4.6kb  |
 
 ## 📃 Examples
 
