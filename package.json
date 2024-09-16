@@ -1,0 +1,45 @@
+{
+  "name": "conteneur",
+  "type": "module",
+  "version": "1.0.0",
+  "license": "MIT",
+  "keywords": [
+    "container",
+    "inversion-of-control",
+    "ioc",
+    "dependency-injection",
+    "di",
+    "service-locator",
+    "service-container",
+    "soc"
+  ],
+  "description": "Lightweight and efficient TypeScript IoC container.",
+  "homepage": "https://github.com/bouclier-dev/conteneur#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bouclier-dev/conteneur.git"
+  },
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": ["build", "package.json", "README.md"],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --out-dir build --treeshake --clean --dts",
+    "test": "tsx --test 'src/index.test.ts' 'src/**/*.test.ts'",
+    "lint": "biome lint",
+    "format": "biome format --write",
+    "check": "tsc && biome check --write",
+    "publish:pre": "npm run lint && npm run build && npm run cover",
+    "publish:post": "npm publish && git push --follow-tags",
+    "release:prerelease": "npm run publish:pre && npm version prerelease && npm run publish:post",
+    "release:patch": "npm run publish:pre && npm version patch && npm run publish:post",
+    "release:minor": "npm run publish:pre && npm version minor && npm run publish:post",
+    "release:major": "npm run publish:pre && npm version major && npm run publish:post"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "~1.8.3",
+    "@types/node": "^22.5.0",
+    "tsup": "^8.2.4",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  }
+}
