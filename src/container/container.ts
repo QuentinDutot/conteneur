@@ -1,232 +1,83 @@
 import type {
-  ClassOrFunctionReturning,
-  Constructor,
-  FunctionReturning,
-  Resolver,
-  ResolverOptions,
-} from '../resolvers/_type'
-import { asClass } from '../resolvers/class'
-import { asFunction } from '../resolvers/function'
-import { getCradleSetError, getInvalidTypeError, getRegistrationError, getResolutionError } from '../utilities/errors'
-import { isClass } from '../utilities/types'
-import { type Lifetime, isLifetimeLonger } from './lifetime'
-import { type RegistrationStore, createRegistrationStore } from './registration-store'
-import { type ResolutionCache, createResolutionCache } from './resolution-cache'
-import { type ResolutionStack, createResolutionStack } from './resolution-stack'
+  ContainerInstance,
+  ContainerOptions,
+  RegistryOptions,
+  ResolverEntries,
+  ResolverFunction,
+  ResolverInterface,
+} from '../types'
 
-/**
- * The container returned from createContainer has some methods.
- */
-export interface Container<Cradle extends object = any> {
-  /**
-   * Pairs resolvers to registration names and registers them.
-   */
-  register<T extends Partial<Cradle>>(registrations: T): this
-  /**
-   * Resolves the registration with the given name.
-   */
-  resolve<K extends keyof Cradle>(name: K): Cradle[K]
-  /**
-   * Resolves the registration with the given name.
-   */
-  resolve<T>(name: string): T
-  /**
-   * Given a class or function, builds it up and returns it.
-   * Does not cache, any lifetime configured will not be used.
-   */
-  build<T>(target: ClassOrFunctionReturning<T>, options?: ResolverOptions): T
-  /**
-   * Creates a scoped container with this one as the parent.
-   */
-  createScope<T extends object = object>(): Container<Cradle & T>
-}
+export const createContainer = <Registrations extends Record<string, unknown>>(
+  options?: ContainerOptions,
+): ContainerInstance<Registrations> => createRegistry<Registrations>(options)
 
-interface ContainerContext {
-  containerType: 'container' | 'scope'
-  containerCradle?: object
-  parentRegistrationStore?: RegistrationStore
-  containerResolutionStack: ResolutionStack
-  containerResolutionCache: ResolutionCache
-}
+const createRegistry = <Registrations extends Record<string, unknown>>(
+  options?: RegistryOptions,
+): ContainerInstance<Registrations> => {
+  const defaultStrategy = options?.defaultStrategy ?? 'transient'
+  const parentRegistry = options?.parentRegistry
 
-export const createContainer = <T extends object = any>(): Container<T> => {
-  const containerCradle = undefined
-  const parentRegistrationStore = undefined
-  const containerResolutionStack = createResolutionStack()
-  const containerResolutionCache = createResolutionCache()
+  const registrationMap = new Map<string, ResolverInterface<unknown>>()
+  const resolutionCache = new Map<string, unknown>()
+  const resolutionStack: string[] = []
 
-  return createContainerOrScope({
-    containerType: 'container',
-    containerCradle,
-    parentRegistrationStore,
-    containerResolutionStack,
-    containerResolutionCache,
-  })
-}
-
-function createContainerOrScope<T extends object = any>(context: ContainerContext): Container<T> {
-  const { containerType, parentRegistrationStore, containerResolutionStack, containerResolutionCache } = context
-
-  // this store is recursively augmented with parent stores
-  const localRegistrationStore = createRegistrationStore(parentRegistrationStore)
-
-  // this cache is purely local
-  const localResolutionCache = containerType === 'container' ? containerResolutionCache : createResolutionCache()
-
-  // proxy is passed to functions so they can resolve their dependencies without knowing where they come from
-  const cradle = new Proxy<T>({} as T, {
-    // invoked whenever a get-call for `cradle.*` is made
-    get: (_target: unknown, name: string) => resolve(name),
-
-    // setting things on the cradle throws an error
-    set: (_target: unknown, name: string) => {
-      throw getCradleSetError({ name })
+  const cradle = new Proxy<Registrations>({} as Registrations, {
+    get: (_target: unknown, key: string) => resolve(key),
+    set: (_target: unknown, key: string) => {
+      throw new Error(`Direct assignment for ${key} is not allowed.`)
     },
   })
 
-  const containerCradle = containerType === 'container' ? cradle : context.containerCradle
-
-  function createScope<P extends object>(): Container<P & T> {
-    return createContainerOrScope({
-      containerType: 'scope',
-      containerCradle,
-      parentRegistrationStore: localRegistrationStore,
-      containerResolutionStack,
-      containerResolutionCache,
-    })
-  }
-
-  function register<U extends Partial<T>>(registrations: U): Container<T> {
-    const keys = Object.keys(registrations)
-
-    for (const name of keys) {
-      const resolver = registrations[name as keyof U] as Resolver<any>
-
-      // Check to ensure we are not registering a singleton on a non-root container
-      if (resolver.lifetime === 'singleton' && containerType === 'scope') {
-        throw getRegistrationError({ name })
-      }
-
-      localRegistrationStore.addRecord({ [name]: resolver })
-    }
-
-    return container
-  }
-
-  function getResolver(name: string): Resolver<any> {
-    const resolver = localRegistrationStore.getRecord(name)
-
-    if (containerResolutionStack.hasModule(name)) {
-      throw getResolutionError({
-        name,
-        message: 'Cyclic dependencies detected.',
-        resolutionStack: containerResolutionStack,
+  const register = (entries: ResolverEntries): void => {
+    for (const [key, [resolver, options]] of Object.entries(entries)) {
+      registrationMap.set(key, {
+        resolve: resolver,
+        strategy: options?.strategy ?? defaultStrategy,
       })
     }
+  }
 
+  const resolve = <Key extends keyof Registrations>(key: Key): Registrations[Key] => {
+    if (resolutionStack.includes(key as string)) {
+      throw new Error(`Cyclic dependency detected: ${resolutionStack.join(' -> ')} -> ${String(key)}`)
+    }
+
+    resolutionStack.push(key as string)
+
+    const resolver = registrationMap.get(key as string) ?? parentRegistry?.registrationMap.get(key as string)
     if (!resolver) {
-      throw getResolutionError({
-        name,
-        message: 'Could not find a registration.',
-        resolutionStack: containerResolutionStack,
-      })
+      resolutionStack.pop()
+
+      throw new Error(`Resolver for ${String(key)} not found`)
     }
 
-    const { lifetime = 'transient', isLeakSafe } = resolver
-
-    // If this resolver is not explicitly marked leak-safe, and any of the parents have a shorter lifetime than the one requested, throw an error.
-    if (!isLeakSafe) {
-      const maybeLongerLifetimeParent = containerResolutionStack.findModule(({ lifetime: parentLifetime }) =>
-        isLifetimeLonger(parentLifetime, lifetime),
-      )
-      if (maybeLongerLifetimeParent !== undefined) {
-        throw getResolutionError({
-          name,
-          message: `Dependency '${name.toString()}' has a shorter lifetime than its ancestor : '${maybeLongerLifetimeParent.name.toString()}'.`,
-          resolutionStack: containerResolutionStack,
-        })
-      }
-    }
-
-    return resolver
-  }
-
-  function resolve(name: string): any {
-    try {
-      const resolver = getResolver(name)
-      const lifetime: Lifetime = resolver.lifetime ?? 'transient'
-
-      // Pushes the currently-resolving module information onto the stack
-      containerResolutionStack.addModule({ name, lifetime })
-
-      let resolved: unknown
-      switch (lifetime) {
-        case 'transient':
-          // Transient lifetime means resolve every time.
-          resolved = resolver.resolve(cradle)
-          break
-        case 'singleton': {
-          // Singleton lifetime means cache at all times, regardless of scope.
-          const cached = containerResolutionCache.getEntry(name)
-          if (cached) {
-            resolved = cached.value
-          } else {
-            // Perform singleton resolution using the root container only
-            resolved = resolver.resolve(containerCradle as object)
-            containerResolutionCache.setEntry(name, { resolver, value: resolved })
-          }
-          break
-        }
-        case 'scoped': {
-          // Scoped lifetime means that the container that resolves the registration also caches it.
-          // If this container cache does not have it, resolve and cache it rather than using the parent container's cache.
-          const cached = localResolutionCache.getEntry(name)
-          if (cached !== undefined) {
-            resolved = cached.value
-            break
-          }
-
-          // If we still have not found one, we need to resolve and cache it.
-          resolved = resolver.resolve(cradle)
-          localResolutionCache.setEntry(name, { resolver, value: resolved })
-          break
-        }
-        default:
-          throw getResolutionError({
-            name,
-            message: `Unknown lifetime "${resolver.lifetime}".`,
-            resolutionStack: containerResolutionStack,
-          })
+    let resolved: Registrations[Key]
+    if (resolver.strategy === 'singleton') {
+      let cached = resolutionCache.get(key as string)
+      if (cached === undefined) {
+        cached = resolver.resolve(cradle)
+        resolutionCache.set(key as string, cached)
       }
 
-      // Pop it from the stack again, ready for the next resolution
-      containerResolutionStack.popModule()
-      return resolved
-    } catch (error) {
-      // When we get an error we need to reset the stack
-      containerResolutionStack.clearStack()
-      throw error
-    }
-  }
-
-  function build<T>(target: ClassOrFunctionReturning<T>, options?: ResolverOptions): T {
-    if (!target || typeof target !== 'function') {
-      throw getInvalidTypeError({ name: 'build', expect: 'a function or a class' })
+      resolved = cached as Registrations[Key]
+    } else {
+      resolved = resolver.resolve(cradle) as Registrations[Key]
     }
 
-    const resolver = isClass(target)
-      ? asClass(target as Constructor<T>, options)
-      : asFunction(target as FunctionReturning<T>, options)
+    resolutionStack.pop()
 
-    return resolver.resolve(cradle)
+    return resolved
   }
 
-  const container: Container<T> = {
-    register,
-    resolve,
-    build,
-    createScope,
-  }
+  const inject = <Module>(target: ResolverFunction<Module>): Module => target(cradle)
 
-  return container
+  const createScope = <ScopeRegistrations extends Record<string, unknown>>(): ContainerInstance<
+    Registrations & ScopeRegistrations
+  > =>
+    createRegistry<Registrations & ScopeRegistrations>({
+      defaultStrategy,
+      parentRegistry: { registrationMap },
+    })
+
+  return { register, resolve, inject, createScope }
 }

@@ -1,5 +1,5 @@
 ```js
-import { createContainer, asClass, asFunction } from 'conteneur'
+import { createContainer } from 'conteneur'
 
 class DataService {
   constructor() {
@@ -11,6 +11,8 @@ class DataService {
   }
 }
 
+const createDataService = () => new DataService()
+
 const createUserService = ({ dataService }) => {
   return {
     getUserData: () => dataService.getData()
@@ -20,8 +22,8 @@ const createUserService = ({ dataService }) => {
 const container = createContainer()
 
 container.register({
-  dataService: asClass(DataService),
-  userService: asFunction(createUserService),
+  dataService: [createDataService],
+  userService: [createUserService],
 })
 
 const userService = container.resolve('userService')

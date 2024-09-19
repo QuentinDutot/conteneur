@@ -1,46 +1,41 @@
 ```js
-import { createContainer, asValue } from 'conteneur'
+import { createContainer } from 'conteneur'
 
-class TestService {
-  data: string
+interface DataService {
+  getData: () => string
+}
 
-  constructor() {
-    this.data = 'Hello world!'
-  }
+const createDataService = (): DataService => {
+  const data = 'Hello world!'
 
-  getData(): string {
-    return this.data
+  return {
+    getData: () => data
   }
 }
 
-class DependentService {
-  testService: TestService
+interface UserService {
+  getUserData: () => string
+}
 
-  constructor(testService: TestService) {
-    this.testService = testService
-  }
-
-  getInnerData(): string {
-    return this.testService.getData()
+const createUserService = ({ dataService }: { dataService: DataService }): UserService => {
+  return {
+    getUserData: () => dataService.getData()
   }
 }
 
-interface ICradle {
-  testService: TestService
-  depService: DependentService
+interface Container {
+  dataService: DataService
+  userService: UserService
 }
 
-const container = createContainer<ICradle>()
+const container = createContainer<Container>()
 
 container.register({
-  testService: asClass(TestService),
-  depService: asClass(DependentService),
+  dataService: [createDataService],
+  userService: [createUserService],
 })
 
-const dep1 = container.resolve<DependentService>('depService')
-const dep2 = container.resolve<DependentService>('depService')
+const userService = container.resolve('userService')
 
-// Test that all is well, should produce 'Hello world!'
-console.log(dep1.getInnerData())
-console.log(dep2.getInnerData())
+console.log(userService.getUserData()) // Hello world!
 ```

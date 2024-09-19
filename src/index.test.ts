@@ -1,38 +1,47 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { createContainer } from './container/container'
-import { asClass } from './resolvers/class'
-import { asFunction } from './resolvers/function'
-import { asValue } from './resolvers/value'
 
 // biome-ignore lint/style/noNamespaceImport: needed to test exports
 import * as indexExports from '.'
 // biome-ignore lint/style/noNamespaceImport: needed to test artifacts
 import * as indexArtifacts from '../build/index.js'
 
-describe('index exports', () => {
-  it('exists', () => {
+describe('exports', () => {
+  it('exists with its methods', () => {
     assert.notStrictEqual(indexExports, undefined)
+    assert.strictEqual(typeof indexExports.createContainer, 'function')
   })
 
-  it('has a createContainer function', () => {
-    assert.strictEqual(indexExports.createContainer, createContainer)
-  })
+  it('creates a container and resolves dependencies', () => {
+    const container = indexExports.createContainer<{
+      value: number
+      double: number
+    }>()
 
-  it('has the asValue, asClass, asFunction functions', () => {
-    assert.strictEqual(indexExports.asValue, asValue)
-    assert.strictEqual(indexExports.asClass, asClass)
-    assert.strictEqual(indexExports.asFunction, asFunction)
+    container.register({
+      value: [() => 5],
+      double: [({ value }: { value: number }) => value * 2],
+    })
+
+    assert.strictEqual(container.resolve('double'), 10)
   })
 })
 
-describe('index artifacts', () => {
+describe('artifacts', () => {
+  it('exists with its methods', () => {
+    assert.notStrictEqual(indexArtifacts, undefined)
+    assert.strictEqual(typeof indexArtifacts.createContainer, 'function')
+  })
+
   it('creates a container and resolves dependencies', () => {
-    const container = indexArtifacts.createContainer()
+    const container = indexArtifacts.createContainer<{
+      value: number
+      double: number
+    }>()
 
     container.register({
-      value: indexArtifacts.asValue(5),
-      double: indexArtifacts.asFunction((cradle) => cradle.value * 2),
+      value: [() => 5],
+      double: [({ value }: { value: number }) => value * 2],
     })
 
     assert.strictEqual(container.resolve('double'), 10)

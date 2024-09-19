@@ -1,5 +1,5 @@
 ```js
-import { createContainer, asFunction } from 'conteneur'
+import { createContainer } from 'conteneur'
 
 const createDataService = () => {
   const data = 'Hello world!'
@@ -18,8 +18,8 @@ const createUserService = ({ dataService }) => {
 const container = createContainer()
 
 container.register({
-  dataService: asFunction(createDataService),
-  userService: asFunction(createUserService),
+  dataService: [createDataService],
+  userService: [createUserService],
 })
 
 const userService = container.resolve('userService')

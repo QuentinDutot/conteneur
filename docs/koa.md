@@ -1,13 +1,14 @@
 ```js
 import Koa from 'koa'
 import KoaRouter from 'koa-router'
-import { createContainer, asValue, asFunction, asClass, Lifetime } from 'conteneur'
+import { createContainer } from 'conteneur'
 
-function makeMessageRepository({ DB_CONNECTION_STRING }) {
-  // Imagine using the connection string for something useful..
-  console.log('Message repository constructed with connection string', DB_CONNECTION_STRING)
+const getConnectionString = () => 'localhost:1234'
 
-  function findMessagesForUser(userId) {
+const createMessageRepository = ({ connectionString }) => {
+  console.log('Message repository constructed with connection string', connectionString)
+
+  const findMessagesForUser = (userId) => {
     return Promise.resolve({
       1: [
         { message: 'hello' },
@@ -22,15 +23,11 @@ function makeMessageRepository({ DB_CONNECTION_STRING }) {
   return { findMessagesForUser }
 }
 
-class MessageService {
-  constructor({ currentUser, messageRepository }) {
-    console.log('creating message service, user ID: ', currentUser.id)
-    this.currentUser = currentUser
-    this.messages = messageRepository
-  }
+const createMessageService = ({ currentUser, messageRepository }) => {
+  console.log('creating message service, user ID: ', currentUser.id)
 
-  findMessages() {
-    return this.messages.findMessagesForUser(this.currentUser.id)
+  return {
+    findMessages: () => messageRepository.findMessagesForUser(currentUser.id)
   }
 }
 
@@ -40,36 +37,27 @@ const router = new KoaRouter()
 const container = createContainer()
 
 container.register({
-  // used by the repository; registered.
-  DB_CONNECTION_STRING: asValue('localhost:1234', { lifetime: 'singleton' }),
-  // resolved for each request.
-  messageService: asClass(MessageService, { lifetime: 'scoped' }),
-  // only resolved once
-  messageRepository: asFunction(makeMessageRepository, { lifetime: 'singleton' }),
+  connectionString: [getConnectionString, { strategy: 'singleton' }],
+  messageRepository: [createMessageRepository, { strategy: 'singleton' }],
+  messageService: [createMessageService, { strategy: 'transient' }],
 })
 
-// For each request we want a custom scope.
-app.use((ctx, next) => {
+app.use((context, next) => {
   console.log('Registering scoped stuff')
-  ctx.scope = container.createScope()
-  // based on the query string, let's make a user..
-  ctx.scope.register({
-    // This is where you'd use something like Passport,
-    // and retrieve the req.user or something.
-    currentUser: asValue({
-      id: ctx.request.query.userId,
-    }),
+
+  context.scope = container.createScope()
+  context.scope.register({
+    currentUser: [() => ({ id: context.request.query.userId })],
   })
 
   return next()
 })
 
-router.get('/messages', (ctx) => {
-  // Use the scope to resolve the message service.
-  const messageService = ctx.scope.resolve('messageService')
+router.get('/messages', (context) => {
+  const messageService = context.scope.resolve('messageService')
   return messageService.findMessages().then((messages) => {
-    ctx.body = messages
-    ctx.status = 200
+    context.body = messages
+    context.status = 200
   })
 })
 

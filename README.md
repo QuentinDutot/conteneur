@@ -4,7 +4,7 @@
 [![npm](https://img.shields.io/npm/dt/conteneur.svg?maxAge=1000)](https://www.npmjs.com/package/conteneur)
 [![CI](https://github.com/bouclier-dev/conteneur/actions/workflows/ci.yml/badge.svg)](https://github.com/bouclier-dev/conteneur/actions/workflows/ci.yml)
 
-Conteneur is a lightweight, efficient **Inversion of Control** container that enables **Dependency Injection**, supporting both **Factory Functions** and **Classes** without decorators.
+Conteneur is a lightweight, efficient **Inversion of Control** container for **Dependency Injection** with **Factory Functions**.
 
 - 🪶 3.68KB minified
 - 🧩 Zero dependencies
@@ -15,88 +15,59 @@ Conteneur is a lightweight, efficient **Inversion of Control** container that en
 ## 🚀 Usage
 
 ```js
-import { createContainer, asClass, asFunction, asValue } from 'conteneur'
+import { createContainer } from 'conteneur'
 
 const container = createContainer<Container>()
 
 container.register({
-  connectionString: asValue(process.env.DATABASE_URL),
-  database: asClass(Database),
-  userService: asFunction(createUserService),
-  userController: asFunction(createUserController)
+  connectionString: [() => process.env.DATABASE_URL, { strategy: 'singleton' }],
+  database: [() => new Database()],
+  userService: [createUserService],
+  userController: [createUserController]
 })
 
 const userController = container.resolve('userController')
 ```
 
-## 🎁 Public APIs
+## 🔋 APIs
 
-- **createContainer**
-
-Creates a new container, does not take options.
+Creates a new container.
 
 ```js
-createContainer(): Container
+createContainer(options?: ContainerOptions): Container
 ```
 
-- **asFunction**
+`options.defaultStrategy` : *transient* (default) - *singleton*
 
-Creates a factory function resolver.
-
-```js
-asFunction(myFactory: Function, options?: Options): Resolver
-```
-
-`options.lifetime` : *transient* (default) - *singleton* - *scoped*
-
-- **asClass**
-
-Creates a class resolver.
-
-```js
-asClass(myClass: Class, options?: Options): Resolver
-```
-
-`options.lifetime` : *transient* (default) - *singleton* - *scoped*
-
-- **asValue**
-
-Creates a value resolver.
-
-```js
-asValue(myValue: Primitive): Resolver
-```
-
-## 🔋 Container APIs
-
-- **register**
+### register
 
 Registers multiple resolvers within the container.
 
 ```js
-container.register(modules: Record<string, Resolver>): void
+container.register(entries: ResolverEntries): void
 ```
 
-- **resolve**
+`options.strategy` : *transient* (default) - *singleton*
 
-Injects a function or class **registered** in the container with its dependencies and returns the result.
-Values are returned as is.
+### resolve
+
+Injects a function **registered** in the container with its dependencies and returns the result.
 
 ```js
-container.resolve<T  extends keyof Container>(name: T): Container[T]
+container.resolve<Key  extends keyof Container>(key: Key): Container[Key]
 ```
 
-- **build**
+### inject
 
-Injects a function or class **not registered** in the container with its dependencies and returns the result.
+Injects a function **not registered** in the container with its dependencies and returns the result.
 
 ```js
-container.build<T>(target: ClassOrFunctionReturning<T>): T
+container.inject<T>(target: ClassOrFunctionReturning<T>): T
 ```
 
-- **createScope**
+### createScope
 
-Creates a new scope within the container, does not take options.
+Creates a new scope within the container.
 
 ```js
 container.createScope():  void
@@ -120,7 +91,6 @@ container.createScope():  void
   - [Express](./docs/integrations/express.md) [WIP]
   - [Fastify](./docs/integrations/fastify.md) [WIP]
   - [Hono](./docs/integrations/hono.md) [WIP]
-  - [Cloudflare](./docs/integrations/cloudflare.md) [WIP]
 
 ## 📊 Comparisons
 |                     | ConteneurJS | InversifyJS | TSyringe  | TypeDI   | Awilix    |

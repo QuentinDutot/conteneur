@@ -11,10 +11,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "all": true,
-      "suspicious": {
-        "noExplicitAny": "off"
-      }
+      "all": true
     }
   },
   "organizeImports": {
