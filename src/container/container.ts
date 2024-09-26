@@ -24,7 +24,7 @@ const createRegistry = <Registrations extends Record<string, unknown>>(
   const cradle = new Proxy<Registrations>({} as Registrations, {
     get: (_target: unknown, key: string) => resolve(key),
     set: (_target: unknown, key: string) => {
-      throw new Error(`Direct assignment for ${key} is not allowed.`)
+      throw new Error(`Direct assignment for ${key} is not allowed`)
     },
   })
 
