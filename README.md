@@ -4,29 +4,39 @@
 [![npm](https://img.shields.io/npm/dt/conteneur.svg?maxAge=1000)](https://www.npmjs.com/package/conteneur)
 [![CI](https://github.com/bouclier-dev/conteneur/actions/workflows/ci.yml/badge.svg)](https://github.com/bouclier-dev/conteneur/actions/workflows/ci.yml)
 
-Conteneur is a lightweight, efficient **Inversion of Control** container for **Dependency Injection** with **Factory Functions**.
+Conteneur is an **Inversion of Control** container for **Dependency Injection** using **Factory Functions**.
 
-- 🪶 3.68KB minified
+It supports **Scoped Containers**, **Transient and Singleton Strategies**, and **Cyclic Dependency Detection**.
+
+- 🪶 0.9KB minified
 - 🧩 Zero dependencies
 - 📦 TypeScript and ESM
 - 🧪 100% Test Coverage
-- 🌐 Platform Agnostic (Browser, Node, Deno, Bun, AWS, Vercel, Cloudflare, ..)
+- 🌐 Runtime Agnostic (Browser, Node, Deno, Bun, AWS, Vercel, Cloudflare, ..)
 
 ## 🚀 Usage
 
 ```js
 import { createContainer } from 'conteneur'
 
+const createDataService = () => ({
+  getData: () => 'data from DataService'
+})
+
+const createReportService = ({ dataService }) => ({
+  getReport: () => `Report generated with: ${dataService.getData()}`
+})
+
 const container = createContainer<Container>()
 
 container.register({
-  connectionString: [() => process.env.DATABASE_URL, { strategy: 'singleton' }],
-  database: [() => new Database()],
-  userService: [createUserService],
-  userController: [createUserController]
+  dataService: [createDataService],
+  reportService: [createReportService],
 })
 
-const userController = container.resolve('userController')
+const reportService = container.resolve('reportService')
+
+reportService.getReport() // Report generated with: data from DataService
 ```
 
 ## 🔋 APIs
@@ -62,7 +72,7 @@ container.resolve<Key  extends keyof Container>(key: Key): Container[Key]
 Injects a function **not registered** in the container with its dependencies and returns the result.
 
 ```js
-container.inject<T>(target: ClassOrFunctionReturning<T>): T
+container.inject<T>(target: FunctionFactory<T>): T
 ```
 
 ### createScope
@@ -87,25 +97,20 @@ container.createScope():  void
   - [Scope](./docs/features/scoped.md) [WIP]
   - [Errors](./docs/features/errors.md) [WIP]
 
-- **Integrations**
-  - [Express](./docs/integrations/express.md) [WIP]
-  - [Fastify](./docs/integrations/fastify.md) [WIP]
-  - [Hono](./docs/integrations/hono.md) [WIP]
-
 ## 📊 Comparisons
 |                     | ConteneurJS | InversifyJS | TSyringe  | TypeDI   | Awilix    |
 |---------------------|-------------|-------------|-----------|----------|-----------|
 | TS + ESM + Tests    | ✅          | ✅          | ✅        | ✅       | ✅        |
 | Dependency Count    | 🥇 0        | 🥈 1        | 🥈 1      | 🥇 0     | 🥉 2      |
-| Platform Agnostic   | ✅          | ❌          | ❌        | ❌       | ❌        |
+| Runtime Agnostic    | ✅          | ❌          | ❌        | ❌       | ❌        |
 | Function Support    | ✅          | ❌          | ❌        | ❌       | ✅        |
 | Class Support       | ✅          | ✅          | ✅        | ✅       | ✅        |
 | Value Support       | ✅          | ❌          | ❌        | ❌       | ✅        |
 | Decorator Free      | ✅          | ❌          | ❌        | ❌       | ✅        |
 | Lifetime Management | ✅          | ✅          | ✅        | ✅       | ✅        |
 | Scoped Container    | ✅          | ✅          | ✅        | ❌       | ✅        |
-| Size (min)          | 🥇 3.4kb    | ➖ 49.9kb   | ➖ 15.6kb | 🥈 9.5kb | 🥉 12.5kb |
-| Size (min + gzip)   | 🥇 1.4kb    | ➖ 11.1kb   | ➖ 4.7kb  | 🥈 2.7kb | 🥉 4.6kb  |
+| Size (min)          | 🥇 0.9kb    | ➖ 49.9kb   | ➖ 15.6kb | 🥈 9.5kb | 🥉 12.5kb |
+| Size (min + gzip)   | 🥇 0.5kb    | ➖ 11.1kb   | ➖ 4.7kb  | 🥈 2.7kb | 🥉 4.6kb  |
 
 ## 📃 Inspiration
 
