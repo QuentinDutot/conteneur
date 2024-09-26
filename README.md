@@ -114,4 +114,4 @@ container.createScope():  void
 
 ## 📃 Inspiration
 
-This project is inspired by [jeffijoe/awilix](https://github.com/jeffijoe/awilix) and builds upon its core concepts.
+This project was inspired by [jeffijoe/awilix](https://github.com/jeffijoe/awilix) and builds upon its core concepts.
