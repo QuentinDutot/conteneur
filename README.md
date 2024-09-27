@@ -19,15 +19,7 @@ It supports **Scoped Containers**, **Transient and Singleton Strategies**, and *
 ```js
 import { createContainer } from 'conteneur'
 
-const createDataService = () => ({
-  getData: () => 'data from DataService'
-})
-
-const createReportService = ({ dataService }) => ({
-  getReport: () => `Report generated with: ${dataService.getData()}`
-})
-
-const container = createContainer<Container>()
+const container = createContainer()
 
 container.register({
   dataService: [createDataService],
@@ -36,8 +28,10 @@ container.register({
 
 const reportService = container.resolve('reportService')
 
-reportService.getReport() // Report generated with: data from DataService
+reportService.getReport() // Report: data from DataService
 ```
+
+Full TypeScript example with resolution, injection, scoping: [docs/typescript-example.md](./docs/typescript-example.md)
 
 ## 🔋 APIs
 
@@ -82,20 +76,6 @@ Creates a new scope within the container.
 ```js
 container.createScope():  void
 ```
-
-## 📃 Examples
-
-- **Basics**
-  - [Function](./docs/basics/function.md)
-  - [Class](./docs/basics/class.md)
-  - [Value](./docs/basics/value.md)
-  - [Hybrid](./docs/basics/hybrid.md)
-
-- **Features**
-  - [TypeScript](./docs/features/typescript.md) [WIP]
-  - [Lifetime](./docs/features/lifetime.md) [WIP]
-  - [Scope](./docs/features/scoped.md) [WIP]
-  - [Errors](./docs/features/errors.md) [WIP]
 
 ## 📊 Comparisons
 |                     | ConteneurJS | InversifyJS | TSyringe  | TypeDI   | Awilix    |
