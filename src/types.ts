@@ -22,13 +22,11 @@ export type ResolverEntries = Record<string, [ResolverFunction<unknown>, Resolve
 // CONTAINER
 // -----------------------------------------------
 
-export interface ContainerInstance<Registrations extends Record<string, unknown>> {
+export interface ContainerInstance<Registrations extends object> {
   register: (entries: ResolverEntries) => void
   resolve: <Key extends keyof Registrations>(key: Key) => Registrations[Key]
   inject: <Module>(target: ResolverFunction<Module>) => Module
-  createScope: <ScopeRegistrations extends Record<string, unknown>>() => ContainerInstance<
-    Registrations & ScopeRegistrations
-  >
+  createScope: <ScopeRegistrations extends object>() => ContainerInstance<Registrations & ScopeRegistrations>
 }
 
 export interface ContainerOptions {

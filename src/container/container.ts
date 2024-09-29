@@ -7,13 +7,11 @@ import type {
   ResolverInterface,
 } from '../types'
 
-export const createContainer = <Registrations extends Record<string, unknown>>(
+export const createContainer = <Registrations extends object>(
   options?: ContainerOptions,
 ): ContainerInstance<Registrations> => createRegistry<Registrations>(options)
 
-const createRegistry = <Registrations extends Record<string, unknown>>(
-  options?: RegistryOptions,
-): ContainerInstance<Registrations> => {
+const createRegistry = <Registrations extends object>(options?: RegistryOptions): ContainerInstance<Registrations> => {
   const defaultStrategy = options?.defaultStrategy ?? 'transient'
   const parentRegistry = options?.parentRegistry
 
@@ -22,7 +20,7 @@ const createRegistry = <Registrations extends Record<string, unknown>>(
   const resolutionStack: string[] = []
 
   const cradle = new Proxy<Registrations>({} as Registrations, {
-    get: (_target: unknown, key: string) => resolve(key),
+    get: (_target: unknown, key: string) => resolve(key as keyof Registrations),
     set: (_target: unknown, key: string) => {
       throw new Error(`Direct assignment for ${key} is not allowed`)
     },
@@ -71,9 +69,7 @@ const createRegistry = <Registrations extends Record<string, unknown>>(
 
   const inject = <Module>(target: ResolverFunction<Module>): Module => target(cradle)
 
-  const createScope = <ScopeRegistrations extends Record<string, unknown>>(): ContainerInstance<
-    Registrations & ScopeRegistrations
-  > =>
+  const createScope = <ScopeRegistrations extends object>(): ContainerInstance<Registrations & ScopeRegistrations> =>
     createRegistry<Registrations & ScopeRegistrations>({
       defaultStrategy,
       parentRegistry: { registrationMap },
