@@ -29,7 +29,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --out-dir build --treeshake --clean --dts",
     "test": "tsx --test 'src/index.test.ts' 'src/**/*.test.ts'",
-    "lint": "biome lint",
+    "lint": "biome lint --write",
     "format": "biome format --write",
     "check": "tsc && biome check --write",
     "release:prepare": "npm run build && npm run check && npm run test",
