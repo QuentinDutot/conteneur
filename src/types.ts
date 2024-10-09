@@ -3,12 +3,16 @@
 // -----------------------------------------------
 
 // biome-ignore lint/suspicious/noExplicitAny: any is fine here
-export type ResolverFunction<Module> = (cradle: any) => Module
+export type ResolverTargetFunction<Module> = (cradle: any) => Module
+// biome-ignore lint/suspicious/noExplicitAny: any is fine here
+export type ResolverTargetClass<Module> = new (cradle: any) => Module
+
+export type ResolverTarget<Module> = ResolverTargetFunction<Module> | ResolverTargetClass<Module>
 
 export type ResolverStrategy = 'transient' | 'singleton'
 
 export interface ResolverInterface<Module> {
-  resolve: ResolverFunction<Module>
+  target: ResolverTarget<Module>
   strategy?: ResolverStrategy
 }
 
@@ -16,7 +20,7 @@ export interface ResolverOptions {
   strategy?: ResolverStrategy
 }
 
-export type ResolverEntries = Record<string, [ResolverFunction<unknown>, ResolverOptions?]>
+export type ResolverEntries = Record<string, [ResolverTarget<unknown>, ResolverOptions?]>
 
 // -----------------------------------------------
 // CONTAINER
@@ -25,7 +29,7 @@ export type ResolverEntries = Record<string, [ResolverFunction<unknown>, Resolve
 export interface ContainerInstance<Registrations extends object> {
   register: (entries: ResolverEntries) => void
   resolve: <Key extends keyof Registrations>(key: Key) => Registrations[Key]
-  inject: <Module>(target: ResolverFunction<Module>) => Module
+  inject: <Module>(target: ResolverTarget<Module>) => Module
   createScope: <ScopeRegistrations extends object>() => ContainerInstance<Registrations & ScopeRegistrations>
 }
 

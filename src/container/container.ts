@@ -3,8 +3,10 @@ import type {
   ContainerOptions,
   RegistryOptions,
   ResolverEntries,
-  ResolverFunction,
   ResolverInterface,
+  ResolverTarget,
+  ResolverTargetClass,
+  ResolverTargetFunction,
 } from '../types'
 
 export const createContainer = <Registrations extends object>(
@@ -27,9 +29,9 @@ const createRegistry = <Registrations extends object>(options?: RegistryOptions)
   })
 
   const register = (entries: ResolverEntries): void => {
-    for (const [key, [resolver, options]] of Object.entries(entries)) {
+    for (const [key, [target, options]] of Object.entries(entries)) {
       registrationMap.set(key, {
-        resolve: resolver,
+        target,
         strategy: options?.strategy ?? defaultStrategy,
       })
     }
@@ -53,13 +55,13 @@ const createRegistry = <Registrations extends object>(options?: RegistryOptions)
     if (resolver.strategy === 'singleton') {
       let cached = resolutionCache.get(key as string)
       if (cached === undefined) {
-        cached = resolver.resolve(cradle)
+        cached = inject(resolver.target)
         resolutionCache.set(key as string, cached)
       }
 
       resolved = cached as Registrations[Key]
     } else {
-      resolved = resolver.resolve(cradle) as Registrations[Key]
+      resolved = inject(resolver.target) as Registrations[Key]
     }
 
     resolutionStack.pop()
@@ -67,7 +69,17 @@ const createRegistry = <Registrations extends object>(options?: RegistryOptions)
     return resolved
   }
 
-  const inject = <Module>(target: ResolverFunction<Module>): Module => target(cradle)
+  const inject = <Module>(target: ResolverTarget<Module>): Module => {
+    if (typeof target !== 'function') {
+      throw new Error('Injection target must be a function or a class')
+    }
+
+    if (target.prototype && Object.getOwnPropertyNames(target.prototype).length > 1) {
+      return new (target as ResolverTargetClass<Module>)(cradle)
+    }
+
+    return (target as ResolverTargetFunction<Module>)(cradle)
+  }
 
   const createScope = <ScopeRegistrations extends object>(): ContainerInstance<Registrations & ScopeRegistrations> =>
     createRegistry<Registrations & ScopeRegistrations>({
