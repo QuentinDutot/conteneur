@@ -4,7 +4,7 @@
 [![npm](https://img.shields.io/npm/dt/conteneur.svg?maxAge=1000)](https://www.npmjs.com/package/conteneur)
 [![CI](https://github.com/bouclier-dev/conteneur/actions/workflows/ci.yml/badge.svg)](https://github.com/bouclier-dev/conteneur/actions/workflows/ci.yml)
 
-Conteneur is an **Inversion of Control** container for **Dependency Injection** using **Factory Functions**.
+Conteneur is an **Inversion of Control** container for **Dependency Injection**.
 
 It supports **Scoped Containers**, **Transient and Singleton Strategies**, and **Cyclic Dependency Detection**.
 
@@ -55,7 +55,7 @@ container.register(entries: ResolverEntries): void
 
 ### resolve
 
-Injects a function **registered** in the container with its dependencies and returns the result.
+Injects a function or a class **registered** in the container with its dependencies and returns the result.
 
 ```js
 container.resolve<Key  extends keyof Container>(key: Key): Container[Key]
@@ -63,7 +63,7 @@ container.resolve<Key  extends keyof Container>(key: Key): Container[Key]
 
 ### inject
 
-Injects a function **not registered** in the container with its dependencies and returns the result.
+Injects a function or a class **not registered** in the container with its dependencies and returns the result.
 
 ```js
 container.inject<T>(target: FunctionFactory<T>): T
