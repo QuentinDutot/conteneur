@@ -89,8 +89,8 @@ container.createScope():  void
 | Decorator Free      | ✅          | ❌          | ❌        | ❌       | ✅        |
 | Lifetime Management | ✅          | ✅          | ✅        | ✅       | ✅        |
 | Scoped Container    | ✅          | ✅          | ✅        | ❌       | ✅        |
-| Size (min)          | 🥇 0.9kb    | ➖ 49.9kb   | ➖ 15.6kb | 🥈 9.5kb | 🥉 12.5kb |
-| Size (min + gzip)   | 🥇 0.5kb    | ➖ 11.1kb   | ➖ 4.7kb  | 🥈 2.7kb | 🥉 4.6kb  |
+| Size (min)          | 🥇 1.1kb    | ➖ 49.9kb   | ➖ 15.6kb | 🥈 9.5kb | 🥉 12.5kb |
+| Size (min + gzip)   | 🥇 0.6kb    | ➖ 11.1kb   | ➖ 4.7kb  | 🥈 2.7kb | 🥉 4.6kb  |
 
 ## 📃 Inspiration
 
