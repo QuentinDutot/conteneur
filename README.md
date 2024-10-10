@@ -4,9 +4,9 @@
 [![npm](https://img.shields.io/npm/dt/conteneur.svg?maxAge=1000)](https://www.npmjs.com/package/conteneur)
 [![CI](https://github.com/bouclier-dev/conteneur/actions/workflows/ci.yml/badge.svg)](https://github.com/bouclier-dev/conteneur/actions/workflows/ci.yml)
 
-Conteneur is an **Inversion of Control** container for **Dependency Injection**.
+TypeScript **Inversion of Control** container for **Dependency Injection**.
 
-It supports **Scoped Containers**, **Transient and Singleton Strategies**, and **Cyclic Dependency Detection**.
+It supports **Functions and Classes**, **Scoped Containers**, **Transient and Singleton Strategies**, and **Cyclic Dependency Detection**.
 
 - 🪶 0.9KB minified
 - 🧩 Zero dependencies

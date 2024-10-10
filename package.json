@@ -13,7 +13,7 @@
     "service-container",
     "soc"
   ],
-  "description": "Inversion of Control container for Dependency Injection using Factory Functions.",
+  "description": "TypeScript Inversion of Control container for Dependency Injection.",
   "homepage": "https://github.com/bouclier-dev/conteneur#readme",
   "repository": {
     "type": "git",
