@@ -55,6 +55,14 @@ describe('container target type', () => {
     assert.strictEqual(container.inject(Value).print(), 'class result')
   })
 
+  it('allows class without methods', () => {
+    class Value {}
+
+    const container = createContainer()
+
+    assert.doesNotThrow(() => container.inject(Value))
+  })
+
   it('throws an error on invalid target injection', () => {
     const container = createContainer()
 

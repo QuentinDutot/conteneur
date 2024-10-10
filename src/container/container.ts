@@ -74,7 +74,7 @@ const createRegistry = <Registrations extends object>(options?: RegistryOptions)
       throw new Error('Injection target must be a function or a class')
     }
 
-    if (target.prototype && Object.getOwnPropertyNames(target.prototype).length > 1) {
+    if (!!target.prototype && typeof target.prototype === 'object') {
       return new (target as ResolverTargetClass<Module>)(cradle)
     }
 
