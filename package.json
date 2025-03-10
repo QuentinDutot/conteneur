@@ -14,10 +14,10 @@
     "soc"
   ],
   "description": "TypeScript Inversion of Control container for Dependency Injection.",
-  "homepage": "https://github.com/bouclier-dev/conteneur#readme",
+  "homepage": "https://github.com/QuentinDutot/conteneur#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bouclier-dev/conteneur.git"
+    "url": "git+https://github.com/QuentinDutot/conteneur.git"
   },
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -36,7 +36,7 @@
     "release:patch": "npm version patch",
     "release:minor": "npm version minor",
     "release:major": "npm version major",
-    "release:publish": "npm publish && git push --follow-tags && open-cli https://github.com/bouclier-dev/conteneur/releases/new"
+    "release:publish": "npm publish && git push --follow-tags && open-cli https://github.com/QuentinDutot/conteneur/releases/new"
   },
   "devDependencies": {
     "@biomejs/biome": "~1.9.4",

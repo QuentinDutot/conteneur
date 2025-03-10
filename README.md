@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/conteneur.svg?maxAge=1000)](https://www.npmjs.com/package/conteneur)
 [![npm](https://img.shields.io/npm/dt/conteneur.svg?maxAge=1000)](https://www.npmjs.com/package/conteneur)
-[![CI](https://github.com/bouclier-dev/conteneur/actions/workflows/ci.yml/badge.svg)](https://github.com/bouclier-dev/conteneur/actions/workflows/ci.yml)
+[![CI](https://github.com/QuentinDutot/conteneur/actions/workflows/ci.yml/badge.svg)](https://github.com/QuentinDutot/conteneur/actions/workflows/ci.yml)
 
 TypeScript **Inversion of Control** container for **Dependency Injection**.
 
